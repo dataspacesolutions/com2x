@@ -1,0 +1,33 @@
+# .gitignore
+cat > .gitignore <<'EOF'
+node_modules/
+dist/
+.vite/
+.cache/
+.eslintcache
+
+.env
+.env.*
+*.pem
+*.key
+*.crt
+
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+*.log
+*.tmp
+*.swp
+
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/settings.json
+
+.netlify/
+.vercel/
+
+*.zip
+*.tar
+*.tgz
+EOF
