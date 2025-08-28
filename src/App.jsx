@@ -24,7 +24,7 @@ const withBase = (p) =>
   `${import.meta.env.BASE_URL.replace(/\/$/, "")}/${String(p).replace(/^\//, "")}`;
 
 const tcsUrl = withBase("Terms_and_Conditions.pdf");
-const conxifyGuideUrl = withBase("ConXify user manual v1.0.docx");
+const conxifyGuideUrl = withBase("ConXify_Access_Guide.txt");
 
 export default function App() {
   const initialChecklist = [
