@@ -27,7 +27,7 @@ export default function App() {
 
     // Phase 2
     { id: "2.1", phase: 2, title: "Company & Contacts", description: "Provide legal entity details and key contacts (IT, Legal, Business).", required: true, status: Status.LOCKED, actions: ["Submit"], requires: ["1.2:accepted"], dueDate: daysFromNow(10) },
-    { id: "2.2", phase: 2, title: "Cofinity-X Registration", description: "COM2X team registers your organization and assigns your BPN.", required: true, status: Status.LOCKED, actions: ["Refresh Status"], readOnly: true, requires: ["2.1:submitted"], dueDate: daysFromNow(14) },
+    { id: "2.2", phase: 2, title: "Cofinity-X Registration", description: "Register your organization and get your BPN.", required: true, status: Status.LOCKED, actions: ["Refresh Status"], readOnly: true, requires: ["2.1:submitted"], dueDate: daysFromNow(14) },
     { id: "2.3", phase: 2, title: "Select Use Cases", description: "Choose one or more initial Catena-X use cases.", required: true, status: Status.LOCKED, actions: ["Select"], requires: ["2.2:ready"], dueDate: daysFromNow(15) },
     { id: "2.4", phase: 2, title: "Choose Connector", description: "Select one: T-Systems, Sovity, or Cofinity.", required: true, status: Status.LOCKED, actions: ["Choose"], requires: ["2.3:submitted"], dueDate: daysFromNow(16) },
     { id: "2.5", phase: 2, title: "Choose Application", description: "Pick ConXify or Other.", required: true, status: Status.LOCKED, actions: ["Choose"], requires: ["2.4:chosen"], dueDate: daysFromNow(17) },
