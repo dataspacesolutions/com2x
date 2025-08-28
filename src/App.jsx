@@ -1,6 +1,6 @@
 import React from "react";
 import { Status, allUseCases } from "./constants";
-import { fmtDate, daysFromNow, useLocalStorage, toCsv } from "./utils";
+import { fmtDate, daysFromNow, useLocalStorage, toCsv , saveFile } from "./utils";
 
 import ProgressBar from "./components/ProgressBar";
 import PhaseTag from "./components/PhaseTag";
@@ -27,7 +27,7 @@ export default function App() {
 
     // Phase 2
     { id: "2.1", phase: 2, title: "Company & Contacts", description: "Provide legal entity details and key contacts (IT, Legal, Business).", required: true, status: Status.LOCKED, actions: ["Submit"], requires: ["1.2:accepted"], dueDate: daysFromNow(10) },
-    { id: "2.2", phase: 2, title: "Cofinity-X Registration", description: "Register your organization and get your BPN.", required: true, status: Status.LOCKED, actions: ["Refresh Status"], readOnly: true, requires: ["2.1:submitted"], dueDate: daysFromNow(14) },
+    { id: "2.2", phase: 2, title: "Cofinity-X Registration", description: "COM2X team registers your organization and assigns your BPN.", required: true, status: Status.LOCKED, actions: ["Refresh Status"], readOnly: true, requires: ["2.1:submitted"], dueDate: daysFromNow(14) },
     { id: "2.3", phase: 2, title: "Select Use Cases", description: "Choose one or more initial Catena-X use cases.", required: true, status: Status.LOCKED, actions: ["Select"], requires: ["2.2:ready"], dueDate: daysFromNow(15) },
     { id: "2.4", phase: 2, title: "Choose Connector", description: "Select one: T-Systems, Sovity, or Cofinity.", required: true, status: Status.LOCKED, actions: ["Choose"], requires: ["2.3:submitted"], dueDate: daysFromNow(16) },
     { id: "2.5", phase: 2, title: "Choose Application", description: "Pick ConXify or Other.", required: true, status: Status.LOCKED, actions: ["Choose"], requires: ["2.4:chosen"], dueDate: daysFromNow(17) },
@@ -165,32 +165,17 @@ export default function App() {
     "Export JSON": () => {
       const payload = { items, decision, system, feedbacks, issues };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "com2x-onboarding-state.json";
-      a.click();
-      URL.revokeObjectURL(url);
+      saveFile(blob, "\1");
     },
     "Export Feedback CSV": () => {
       const csv = toCsv(feedbacks);
-      const blob = new Blob([csv], { type: "text/csv" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "com2x-feedback.csv";
-      a.click();
-      URL.revokeObjectURL(url);
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      saveFile(blob, "\1");
     },
     "Export Issues CSV": () => {
       const csv = toCsv(issues);
-      const blob = new Blob([csv], { type: "text/csv" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "com2x-issues.csv";
-      a.click();
-      URL.revokeObjectURL(url);
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      saveFile(blob, "\1");
     },
     "Add Feedback": (id, text) => {
       if (!text?.trim()) return;
@@ -479,7 +464,7 @@ export default function App() {
                   rel="noreferrer"
                   className="flex-1 px-3 py-2 rounded-lg bg-white border text-center text-sm"
                 >
-                  Knowledge Base
+                  AI Assistant
                 </a>
               </div>
             </div>
@@ -639,7 +624,11 @@ export default function App() {
               defaultKey={decision.connector}
               onConfirm={(choice) => {
                 setItems((prev) => prev.map((x) => (x.id === "2.4" ? { ...x, status: Status.DONE } : x)));
-                setDecision((prev) => ({ ...prev, connector: choice }));
+                setDecision((prev) => ({
+                  ...prev,
+                  connector: choice,
+                  app: (choice === "custom" && prev.app === "conxify") ? undefined : prev.app
+                }));
                 setChooseConnectorOpen(false);
               }}
             />
@@ -658,6 +647,7 @@ export default function App() {
           </div>
           <div className="p-4 overflow-auto">
             <AppChooser
+              disabledConxify={decision?.connector==='custom'}
               onConfirm={(choice) => {
                 setItems((prev) => prev.map((x) => (x.id === "2.5" ? { ...x, status: Status.DONE } : x)));
                 setDecision((prev) => ({ ...prev, app: choice }));

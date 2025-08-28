@@ -11,28 +11,17 @@ export default function AddFeedbackButton({ onAdd }) {
         </button>
       )}
       {open && (
-        <div className="absolute z-20 mt-1 right-0 bg-white border rounded-lg p-2 shadow-lg w-64">
-          <textarea
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            rows={3}
-            className="w-full border rounded-lg p-2 text-sm"
-            placeholder="Write your feedback..."
-          />
-          <div className="mt-2 flex gap-2 justify-end">
-            <button
-              onClick={() => {
-                onAdd(text);
-                setText("");
-                setOpen(false);
-              }}
-              className="px-3 py-1.5 text-sm rounded-lg bg-gray-900 text-white hover:bg-black"
-            >
-              Submit
-            </button>
-            <button onClick={() => { setOpen(false); setText(""); }} className="px-3 py-1.5 text-sm rounded-lg border">
-              Cancel
-            </button>
+        <div className="fixed inset-0 z-50 bg-black/20 flex items-start justify-end p-4 sm:items-center sm:justify-center">
+          <div className="bg-white border rounded-xl p-3 w-full max-w-md shadow-xl">
+            <div className="flex items-center justify-between mb-2">
+              <div className="font-medium text-sm">Add Feedback</div>
+              <button onClick={() => { setOpen(false); setText(""); }} className="text-xs px-2 py-1 rounded border">Close</button>
+            </div>
+            <textarea value={text} onChange={(e) => setText(e.target.value)} className="w-full border rounded-lg p-2 text-sm" placeholder="Share your feedback..." />
+            <div className="mt-2 flex gap-2 justify-end">
+              <button onClick={() => { onAdd(text); setText(""); setOpen(false); }} className="px-3 py-1.5 text-sm rounded-lg bg-gray-900 text-white hover:bg-black">Submit</button>
+              <button onClick={() => { setOpen(false); setText(""); }} className="px-3 py-1.5 text-sm rounded-lg border hover:bg-gray-50">Cancel</button>
+            </div>
           </div>
         </div>
       )}

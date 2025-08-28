@@ -41,3 +41,18 @@ export function useLocalStorage(key, initial) {
   }, [key, state]);
   return [state, setState];
 }
+
+
+export const saveFile = (blob, filename) => {
+  const a = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+  a.href = url;
+  a.download = filename;
+  a.style.display = "none";
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 0);
+};
