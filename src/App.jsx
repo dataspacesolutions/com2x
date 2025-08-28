@@ -20,9 +20,11 @@ import DueDateEditor from "./components/DueDateEditor";
 import ContactSupportModal from "./components/ContactSupportModal";
 import CompanyContacts from "./components/CompanyContacts";
 
-// public asset URLs that respect Vite base (/com2x/ on GitHub Pages)
-const tcsUrl = new URL("Terms_and_Conditions.pdf", import.meta.env.BASE_URL).toString();
-const conxifyGuideUrl = new URL("ConXify user manual v1.0.docx", import.meta.env.BASE_URL).toString();
+const withBase = (p) =>
+  `${import.meta.env.BASE_URL.replace(/\/$/, "")}/${String(p).replace(/^\//, "")}`;
+
+const tcsUrl = withBase("Terms_and_Conditions.pdf");
+const conxifyGuideUrl = withBase("ConXify user manual v1.0.docx");
 
 export default function App() {
   const initialChecklist = [
