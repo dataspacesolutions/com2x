@@ -165,17 +165,17 @@ export default function App() {
     "Export JSON": () => {
       const payload = { items, decision, system, feedbacks, issues };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-      saveFile(blob, "\1");
+      saveFile(blob, "com2x-onboarding-state.json");
     },
     "Export Feedback CSV": () => {
       const csv = toCsv(feedbacks);
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-      saveFile(blob, "\1");
+      saveFile(blob, "com2x-feedback.csv");
     },
     "Export Issues CSV": () => {
       const csv = toCsv(issues);
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-      saveFile(blob, "\1");
+      saveFile(blob, "com2x-issues.csv");
     },
     "Add Feedback": (id, text) => {
       if (!text?.trim()) return;
