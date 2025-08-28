@@ -1,6 +1,7 @@
 import React from "react";
 import { Status, allUseCases } from "./constants";
 import { fmtDate, daysFromNow, useLocalStorage, toCsv , saveFile } from "./utils";
+import { exportChecklistXlsx } from "./exporters";
 
 import ProgressBar from "./components/ProgressBar";
 import PhaseTag from "./components/PhaseTag";
@@ -17,7 +18,11 @@ import IssuePanel from "./components/IssuePanel";
 import EditDueDateButton from "./components/EditDueDateButton";
 import DueDateEditor from "./components/DueDateEditor";
 import ContactSupportModal from "./components/ContactSupportModal";
+import CompanyContacts from "./components/CompanyContacts";
 
+// public asset URLs that respect Vite base (/com2x/ on GitHub Pages)
+const tcsUrl = new URL("sample-tcs.pdf", import.meta.env.BASE_URL).toString();
+const conxifyGuideUrl = new URL("ConXify user manual v1.0.docx", import.meta.env.BASE_URL).toString();
 
 export default function App() {
   const initialChecklist = [
@@ -27,7 +32,7 @@ export default function App() {
 
     // Phase 2
     { id: "2.1", phase: 2, title: "Company & Contacts", description: "Provide legal entity details and key contacts (IT, Legal, Business).", required: true, status: Status.LOCKED, actions: ["Submit"], requires: ["1.2:accepted"], dueDate: daysFromNow(10) },
-    { id: "2.2", phase: 2, title: "Cofinity-X Registration", description: "COM2X team registers your organization and assigns your BPN.", required: true, status: Status.LOCKED, actions: ["Refresh Status"], readOnly: true, requires: ["2.1:submitted"], dueDate: daysFromNow(14) },
+    { id: "2.2", phase: 2, title: "Cofinity-X Registration", description: "Register your organization in Cofinity and procure BPN.", required: true, status: Status.LOCKED, actions: ["Refresh Status"], readOnly: true, requires: ["2.1:submitted"], dueDate: daysFromNow(14) },
     { id: "2.3", phase: 2, title: "Select Use Cases", description: "Choose one or more initial Catena-X use cases.", required: true, status: Status.LOCKED, actions: ["Select"], requires: ["2.2:ready"], dueDate: daysFromNow(15) },
     { id: "2.4", phase: 2, title: "Choose Connector", description: "Select one: T-Systems, Sovity, or Cofinity.", required: true, status: Status.LOCKED, actions: ["Choose"], requires: ["2.3:submitted"], dueDate: daysFromNow(16) },
     { id: "2.5", phase: 2, title: "Choose Application", description: "Pick ConXify or Other.", required: true, status: Status.LOCKED, actions: ["Choose"], requires: ["2.4:chosen"], dueDate: daysFromNow(17) },
@@ -44,7 +49,7 @@ export default function App() {
   ];
 
   const [items, setItems] = useLocalStorage("com2x_items_v6", initialChecklist);
-  const [decision, setDecision] = useLocalStorage("com2x_decision_v6", { connector: "t-systems", app: undefined, useCases: [] });
+  const [decision, setDecision] = useLocalStorage("com2x_decision_v6", { connector: "t-systems", app: undefined, useCases: [], contacts: {},  });
   const [system, setSystem] = useLocalStorage("com2x_system_v6", { bpn: "—", cofinityRegistered: false, completed: false, completedAt: null });
   const [feedbacks, setFeedbacks] = useLocalStorage("com2x_feedbacks_v6", []); // {id:'4.2', text:'..', status:'open'|'resolved', t:iso}
   const [issues, setIssues] = useLocalStorage("com2x_issues_v6", []);         // {id:'3.2', text:'..', status:'open'|'resolved', t:iso}
@@ -148,11 +153,21 @@ export default function App() {
       setSystem({ ...system, bpn: "BPN-12AB-34CD", cofinityRegistered: true });
       setItems((prev) => prev.map((x) => (x.id === id ? { ...x, status: Status.DONE } : x)));
     },
+    "Download Sample T&Cs": () => {
+      const a = document.createElement("a");
+      a.href = tcsUrl;
+      a.download = "sample-tcs.pdf";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    },
     "Download Access Guide": () => {
       const a = document.createElement("a");
-      a.href = "/ConXify_Access_Guide.txt";
-      a.download = "ConXify_Access_Guide.txt";
+      a.href = conxifyGuideUrl;
+      a.download = "ConXify user manual v1.0.docx";
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
     },
     "Mark Ready": (id) => setItems((prev) => prev.map((x) => (x.id === id ? { ...x, status: Status.DONE } : x))),
     "Provide Business Sign-off": (id) => setItems((prev) => prev.map((x) => (x.id === id ? { ...x, status: Status.DONE } : x))),
@@ -162,10 +177,14 @@ export default function App() {
       setSystem((prev) => ({ ...prev, completed: true, completedAt: new Date().toISOString() }));
       setItems((prev) => prev.map((x) => (x.id === "4.2" ? { ...x, status: Status.DONE } : x)));
     },
-    "Export JSON": () => {
+    /*"Export JSON": () => {
       const payload = { items, decision, system, feedbacks, issues };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
       saveFile(blob, "com2x-onboarding-state.json");
+    },*/
+    "Export Checklist (XLSX)": () => {
+      const blob = exportChecklistXlsx(items, decision, system);
+      saveFile(blob, "com2x-checklist.xlsx");
     },
     "Export Feedback CSV": () => {
       const csv = toCsv(feedbacks);
@@ -330,7 +349,8 @@ export default function App() {
 
                               {i.id === "1.2" && (
                                 <div className="mt-2">
-                                  <a className="text-sm text-blue-700 underline" href="/COM2X_Terms_Sample.txt" download>
+                                  
+                                  <a href={tcsUrl} download className="px-3 py-2 rounded-lg border text-sm">
                                     Download Sample T&Cs
                                   </a>
                                 </div>
