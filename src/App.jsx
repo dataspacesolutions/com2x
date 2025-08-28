@@ -21,7 +21,7 @@ import ContactSupportModal from "./components/ContactSupportModal";
 import CompanyContacts from "./components/CompanyContacts";
 
 // public asset URLs that respect Vite base (/com2x/ on GitHub Pages)
-const tcsUrl = new URL("sample-tcs.pdf", import.meta.env.BASE_URL).toString();
+const tcsUrl = new URL("Terms_and_Conditions.pdf", import.meta.env.BASE_URL).toString();
 const conxifyGuideUrl = new URL("ConXify user manual v1.0.docx", import.meta.env.BASE_URL).toString();
 
 export default function App() {
@@ -156,7 +156,7 @@ export default function App() {
     "Download Sample T&Cs": () => {
       const a = document.createElement("a");
       a.href = tcsUrl;
-      a.download = "sample-tcs.pdf";
+      a.download = "Terms_and_Conditions.pdf";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -351,7 +351,7 @@ export default function App() {
                                 <div className="mt-2">
                                   
                                   <a href={tcsUrl} download className="px-3 py-2 rounded-lg border text-sm">
-                                    Download Sample T&Cs
+                                    Download T&Cs
                                   </a>
                                 </div>
                               )}
